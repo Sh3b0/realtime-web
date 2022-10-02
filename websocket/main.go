@@ -26,7 +26,7 @@ func serve(w http.ResponseWriter, r *http.Request) {
 	for i := 10; i < 510; i += 10 {
 		for j := 10; j < 510; j += 10 {
 			if err := socket.WriteMessage(websocket.TextMessage,
-				[]byte(strconv.Itoa(j)+","+strconv.Itoa(i))); err != nil {
+				[]byte(strconv.Itoa(j)+","+strconv.Itoa(i)+" ")); err != nil {
 				log.Println(err)
 				return
 			}

@@ -23,10 +23,10 @@ func main() {
 			writer.WriteHeader(500)
 			return
 		}
-		stream, err := conn.OpenStream()
+		stream, err := conn.OpenUniStream()
 		for i := 10; i < 510; i += 10 {
 			for j := 10; j < 510; j += 10 {
-				_, err := stream.Write([]byte(strconv.Itoa(j) + "," + strconv.Itoa(i)))
+				_, err := stream.Write([]byte(strconv.Itoa(j) + "," + strconv.Itoa(i) + " "))
 				if err != nil {
 					log.Println(err)
 					return

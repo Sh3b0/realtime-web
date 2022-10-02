@@ -21,14 +21,7 @@ webSocketBtn.onclick = (_) => {
 
     client.onmessage = (e) => {
         messageCount += 1;
-        let indices = e.data.split(',')
-        context.fillStyle = 'green';
-        context.fillRect(
-            indices[0],
-            indices[1],
-            9,
-            9
-        )
+        visualizePacket(e.data);
     }
 
     client.onclose = (_) => {
@@ -60,13 +53,33 @@ webTransportBtn.onclick = async (_) => {
     await client.ready;
     consoleAppend(`Connection established in ${new Date() - startTime} ms.`);
 
-    const reader = client.stream.readable.getReader();
+    // const reader = client.datagrams.readable.getReader();
+    const reader = client.incomingUnidirectionalStreams.getReader();
     while (true) {
         const {value, done} = await reader.read();
         if (done) {
+            consoleAppend('Finished reading from stream.');
             break;
         }
-        consoleAppend(value);
+        await readFromIncomingStream(value, 1);
+    }
+}
+
+
+async function readFromIncomingStream(stream, number) {
+    let decoder = new TextDecoderStream('utf-8');
+    let reader = stream.pipeThrough(decoder).getReader();
+    try {
+        while (true) {
+            const {value, done} = await reader.read();
+            if (done) {
+                consoleAppend('Stream #' + number + ' closed');
+                return;
+            }
+            visualizePacket(value);
+        }
+    } catch (e) {
+        consoleAppend('Error while reading from stream #' + number + ': ' + e);
     }
 }
 
@@ -94,4 +107,20 @@ function consoleAppend(text) {
     if (latestEntry != null && latestEntry.getBoundingClientRect().top < console.getBoundingClientRect().bottom) {
         logLine.scrollIntoView();
     }
+}
+
+function visualizePacket(packet) {
+    let messages = packet.split(' ');
+    messages.forEach(message => {
+        if (message === '') return;
+        console.log(message)
+        let coords = message.split(',');
+        context.fillStyle = 'green';
+        context.fillRect(
+            coords[0],
+            coords[1],
+            9,
+            9
+        )
+    });
 }
