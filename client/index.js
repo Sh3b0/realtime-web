@@ -9,13 +9,13 @@ const context = canvas.getContext('2d');
 webSocketBtn.onclick = (_) => {
     const url = "ws://localhost:8080";
     initCanvas()
-    consoleAppend(`Connecting to WebSocket server at ${url} ...`);
+    console.log(`Connecting to WebSocket server at ${url} ...`);
 
     let startTime = new Date(), messageCount = 0;
     const client = new WebSocket(url);
 
     client.onopen = (_) => {
-        consoleAppend(`Connection established in ${new Date() - startTime} ms.`);
+        console.log(`Connection established in ${new Date() - startTime} ms.`);
         startTime = new Date();
     }
 
@@ -25,43 +25,46 @@ webSocketBtn.onclick = (_) => {
     }
 
     client.onclose = (_) => {
-        consoleAppend(`${messageCount} packet(s) were received within ${new Date() - startTime} ms.`)
-        consoleAppend('Disconnected from WebSocket server.');
+        console.log(`${messageCount} packet(s) were received within ${new Date() - startTime} ms.`)
+        console.log('Disconnected from WebSocket server.');
     }
 
     client.onerror = (_) => {
-        consoleAppend('Failed to connect to WebSocket server');
+        console.log('Failed to connect to WebSocket server');
     }
 }
 
 webTransportBtn.onclick = async (_) => {
     const url = "https://localhost:443";
-    // let messageCount = 0;
 
     initCanvas()
-    consoleAppend(`Connecting to WebTransport server at ${url} ...`);
+    console.log(`Connecting to WebTransport server at ${url} ...`);
 
     let startTime = new Date();
     const client = new WebTransport(url);
 
     client.closed.then(() => {
-        consoleAppend(`The HTTP/3 connection to ${url} closed gracefully.`);
+        console.log(`The HTTP/3 connection to ${url} closed gracefully.`);
     }).catch((error) => {
-        consoleAppend(`The HTTP/3 connection to ${url} closed due to ${error}.`);
+        console.log(`The HTTP/3 connection to ${url} closed due to ${error}.`);
     });
 
     await client.ready;
-    consoleAppend(`Connection established in ${new Date() - startTime} ms.`);
-
-    // const reader = client.datagrams.readable.getReader();
-    const reader = client.incomingUnidirectionalStreams.getReader();
+    console.log(`Connection established in ${new Date() - startTime} ms.`);
+    startTime = new Date();
+    const reader = client.datagrams.readable.getReader();
+    // const reader = client.incomingUnidirectionalStreams.getReader();
+    let decoder = new TextDecoder('utf-8');
     while (true) {
         const {value, done} = await reader.read();
         if (done) {
-            consoleAppend('Finished reading from stream.');
+            console.log('Finished reading streams.');
             break;
         }
-        await readFromIncomingStream(value, 1);
+        visualizePacket(decoder.decode(value));
+        // console.log(decoder.decode(value));
+        // let messageCount = await readFromIncomingStream(value, 1);
+        // console.log(`${messageCount} packet(s) were received within ${new Date() - startTime} ms.`)
     }
 }
 
@@ -69,18 +72,21 @@ webTransportBtn.onclick = async (_) => {
 async function readFromIncomingStream(stream, number) {
     let decoder = new TextDecoderStream('utf-8');
     let reader = stream.pipeThrough(decoder).getReader();
+    let messageCount = 0;
     try {
         while (true) {
             const {value, done} = await reader.read();
             if (done) {
-                consoleAppend('Stream #' + number + ' closed');
+                console.log('Stream #' + number + ' closed');
                 return;
             }
+            messageCount++;
             visualizePacket(value);
         }
     } catch (e) {
-        consoleAppend('Error while reading from stream #' + number + ': ' + e);
+        console.log('Error while reading from stream #' + number + ': ' + e);
     }
+    return messageCount;
 }
 
 function initCanvas() {
@@ -97,17 +103,17 @@ function initCanvas() {
     }
 }
 
-function consoleAppend(text) {
-    let console = document.getElementById('console');
-    let latestEntry = console.lastElementChild;
-    let logLine = document.createElement('li');
-    logLine.innerText = text;
-    console.appendChild(logLine);
-
-    if (latestEntry != null && latestEntry.getBoundingClientRect().top < console.getBoundingClientRect().bottom) {
-        logLine.scrollIntoView();
-    }
-}
+// function log(text) {
+//     let console = document.getElementById('console');
+//     let latestEntry = console.lastElementChild;
+//     let console.logLine = document.createElement('li');
+//     console.logLine.innerText = text;
+//     console.appendChild(console.logLine);
+//
+//     if (latestEntry != null && latestEntry.getBoundingClientRect().top < console.getBoundingClientRect().bottom) {
+//         console.logLine.scrollIntoView();
+//     }
+// }
 
 function visualizePacket(packet) {
     let messages = packet.split(' ');
