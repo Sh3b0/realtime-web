@@ -1,32 +1,36 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
 	"time"
 
-	"github.com/lucas-clemente/quic-go/http3"
-	"github.com/marten-seemann/webtransport-go"
+	"github.com/adriancable/webtransport-go"
 )
 
 func main() {
-	server := webtransport.Server{
-		H3:          http3.Server{Addr: ":443"},
-		CheckOrigin: func(r *http.Request) bool { return true },
+	server := &webtransport.Server{
+		ListenAddr:     ":443",
+		TLSCert:        webtransport.CertFile{Path: "certs/localhost.pem"},
+		TLSKey:         webtransport.CertFile{Path: "certs/localhost-key.pem"},
+		AllowedOrigins: []string{"localhost:63342"},
+		QuicConfig: &webtransport.QuicConfig{
+			KeepAlive:      true,
+			MaxIdleTimeout: 30 * time.Second,
+		},
 	}
 
-	http.HandleFunc("/", func(writer http.ResponseWriter, reader *http.Request) {
-		conn, err := server.Upgrade(writer, reader)
-		if err != nil {
-			log.Printf("Upgrading failed: %s", err)
-			writer.WriteHeader(500)
-			return
-		}
-		stream, err := conn.OpenUniStream()
+	http.HandleFunc("/", func(rw http.ResponseWriter, r *http.Request) {
+		session := r.Body.(*webtransport.Session)
+		session.AcceptSession()
+
+		fmt.Println("Client connected")
 		for i := 10; i < 510; i += 10 {
 			for j := 10; j < 510; j += 10 {
-				_, err := stream.Write([]byte(strconv.Itoa(j) + "," + strconv.Itoa(i) + " "))
+				err := session.SendMessage([]byte(strconv.Itoa(j) + "," + strconv.Itoa(i) + " "))
 				if err != nil {
 					log.Println(err)
 					return
@@ -34,11 +38,15 @@ func main() {
 				time.Sleep(1 * time.Millisecond)
 			}
 		}
-		if err := conn.Close(); err != nil {
+		if err := session.Close(); err != nil {
 			log.Println(err)
 			return
 		}
 	})
 
-	log.Fatal(server.ListenAndServeTLS("certs/localhost.pem", "certs/localhost-key.pem"))
+	ctx, cancel := context.WithCancel(context.Background())
+	if err := server.Run(ctx); err != nil {
+		cancel()
+		log.Fatal(err)
+	}
 }
