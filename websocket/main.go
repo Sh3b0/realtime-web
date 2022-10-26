@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -39,5 +40,7 @@ func main() {
 			return
 		}
 	})
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	fmt.Println("Server is listening at :8000")
+	log.Fatal(http.ListenAndServeTLS(":8000",
+		"../certs/localhost.pem", "../certs/localhost-key.pem", nil))
 }

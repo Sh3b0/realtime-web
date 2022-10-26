@@ -13,10 +13,10 @@ import (
 
 func main() {
 	server := &webtransport.Server{
-		ListenAddr:     ":443",
-		TLSCert:        webtransport.CertFile{Path: "certs/localhost.pem"},
-		TLSKey:         webtransport.CertFile{Path: "certs/localhost-key.pem"},
-		AllowedOrigins: []string{"localhost:63342"},
+		ListenAddr:     ":8001",
+		TLSCert:        webtransport.CertFile{Path: "../certs/localhost.pem"},
+		TLSKey:         webtransport.CertFile{Path: "../certs/localhost-key.pem"},
+		AllowedOrigins: []string{"localhost:3000"},
 		QuicConfig: &webtransport.QuicConfig{
 			KeepAlive:      true,
 			MaxIdleTimeout: 30 * time.Second,
@@ -27,7 +27,7 @@ func main() {
 		session := r.Body.(*webtransport.Session)
 		session.AcceptSession()
 
-		fmt.Println("Client connected")
+		fmt.Printf("%s Client connected", time.Now())
 		for i := 10; i < 510; i += 10 {
 			for j := 10; j < 510; j += 10 {
 				err := session.SendMessage([]byte(strconv.Itoa(j) + "," + strconv.Itoa(i) + " "))
@@ -45,6 +45,7 @@ func main() {
 	})
 
 	ctx, cancel := context.WithCancel(context.Background())
+	fmt.Println("Server is listening at :8001")
 	if err := server.Run(ctx); err != nil {
 		cancel()
 		log.Fatal(err)
