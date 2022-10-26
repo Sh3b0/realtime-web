@@ -1,35 +1,55 @@
-// import {log, initCanvas, visualizePacket} from "./common.js";
-//
-// const webRTCBtn = document.getElementById("webrtc");
-// let serverSDP;
-//
-// webRTCBtn.onclick = (_) => {
-//     initCanvas();
-//
-//     // Get server SDP from signaling (websocket) server
-//     const client = new WebSocket("ws://localhost:8080");
-//     client.onmessage = (e) => serverSDP = e.data;
-//
-//     let conn = new RTCPeerConnection({iceServers: [{urls: 'stun:stun.l.google.com:19302'}]});
-//     let receiveChannel = conn.createDataChannel('channel');
-//
-//     receiveChannel.onopen = () => log('Connection opened');
-//     receiveChannel.onclose = () => log('Connection closed');
-//     receiveChannel.onmessage = (e) => {
-//         console.log(e.data);
-//         visualizePacket(e.data);
-//     }
-//
-//     conn.oniceconnectionstatechange = _ => log(conn.iceConnectionState)
-//     conn.onicecandidate = event => {
-//         if (event.candidate === null) {
-//             log(btoa(JSON.stringify(conn.localDescription)));
-//         }
-//     }
-//
-//     try {
-//         conn.setRemoteDescription(new RTCSessionDescription(JSON.parse(atob(serverSDP)))).then(r => log(r))
-//     } catch (e) {
-//         log(e)
-//     }
-// }
+import {chart, initCanvas, visualizePacket} from "./common.js";
+
+const webRTCBtn = document.getElementById("webrtc");
+
+webRTCBtn.onclick = (_) => {
+    initCanvas();
+    // webRTCBtn.disabled = true;
+
+    let t0 = new Date();
+    let messageCount = 0;
+    const wsClient = new WebSocket("wss://localhost:8002");
+    const conn = new RTCPeerConnection({iceServers: [{urls: 'stun:stun.l.google.com:19302'}]});
+    const dataChannel = conn.createDataChannel('dataChannel', {ordered: false, maxRetransmits: 0, });
+    const decoder = new TextDecoder("utf-8");
+
+    conn.onicecandidate = e => {
+        if (e.candidate === null) {
+            console.info("Sending offer to server");
+            // wsClient.onopen = () => {
+            //     console.info(conn.localDescription.sdp);
+                wsClient.send(btoa(JSON.stringify(conn.localDescription)));
+            // }
+        }
+    }
+
+    dataChannel.onopen = () => {
+        console.info(`WebRTC Connection established in ${new Date() - t0} ms.`);
+        t0 = new Date();
+        chart.data.datasets[2].data.push({x: 0, y: 0});
+    };
+
+    dataChannel.onmessage = (e) => {
+        messageCount += 1;
+        if (new Date() - t0 - chart.data.datasets[2].data.at(-1).x > 200) {
+            chart.data.datasets[2].data.push({x: new Date() - t0, y: messageCount});
+            chart.update();
+        }
+        visualizePacket(decoder.decode(e.data));
+    }
+
+    dataChannel.onclose = () => {
+        conn.close();
+        console.info('Connection closed');
+    };
+
+    conn.createOffer().then(o => conn.setLocalDescription(o));
+
+    wsClient.onmessage = (e) => {
+        try {
+            conn.setRemoteDescription(new RTCSessionDescription(JSON.parse(atob(e.data)))).then();
+        } catch (e) {
+            console.error(e);
+        }
+    }
+}

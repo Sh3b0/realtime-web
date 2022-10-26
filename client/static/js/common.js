@@ -1,17 +1,6 @@
 const panelContext = document.getElementById('panelCanvas').getContext('2d');
 const chartContext = document.getElementById('chartCanvas').getContext('2d');
 
-let timeStamps = linSpace(0, 10000, 15);
-
-function linSpace(start, end, count) {
-    let arr = [];
-    let step = (end - start) / (count - 1);
-    for (let i = 0; i < count; i++) {
-        arr.push(Math.floor(start + (step * i)));
-    }
-    return arr;
-}
-
 export let chart = new Chart(chartContext, {
     type: 'scatter',
     data: {
@@ -27,6 +16,12 @@ export let chart = new Chart(chartContext, {
                 data: [],
                 label: "WebTransport",
                 borderColor: "#de5246",
+                showLine: true,
+            },
+            {
+                data: [],
+                label: "WebRTC",
+                borderColor: "#34A853",
                 showLine: true,
             },
         ]

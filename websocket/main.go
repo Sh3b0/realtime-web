@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -13,9 +12,7 @@ import (
 func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		var upgrader = websocket.Upgrader{
-			ReadBufferSize:  425984,
-			WriteBufferSize: 425984,
-			CheckOrigin:     func(r *http.Request) bool { return true },
+			CheckOrigin: func(r *http.Request) bool { return true },
 		}
 
 		conn, err := upgrader.Upgrade(w, r, nil)
@@ -40,7 +37,7 @@ func main() {
 			return
 		}
 	})
-	fmt.Println("Server is listening at :8000")
+	log.Println("Server is listening at :8000")
 	log.Fatal(http.ListenAndServeTLS(":8000",
 		"../certs/localhost.pem", "../certs/localhost-key.pem", nil))
 }

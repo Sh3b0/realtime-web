@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -26,8 +25,7 @@ func main() {
 	http.HandleFunc("/", func(rw http.ResponseWriter, r *http.Request) {
 		session := r.Body.(*webtransport.Session)
 		session.AcceptSession()
-		time.Sleep(1 * time.Millisecond)
-		fmt.Printf("%s Client connected\n", time.Now().Format("2006/02/01 15:04:05"))
+		log.Printf("Client Connected\n")
 		for i := 10; i < 510; i += 10 {
 			for j := 10; j < 510; j += 10 {
 				err := session.SendMessage([]byte(strconv.Itoa(j) + "," + strconv.Itoa(i) + " "))
@@ -45,7 +43,7 @@ func main() {
 	})
 
 	ctx, cancel := context.WithCancel(context.Background())
-	fmt.Println("Server is listening at :8001")
+	log.Println("Server is listening at :8001")
 	if err := server.Run(ctx); err != nil {
 		cancel()
 		log.Fatal(err)

@@ -5,7 +5,7 @@ const serverUrl = "https://localhost:8001";
 
 webTransportBtn.onclick = async (_) => {
     initCanvas()
-    webTransportBtn.disabled = true;
+    // webTransportBtn.disabled = true;
     console.info(`Connecting to WebTransport server at ${serverUrl} ...`);
 
     let t0 = new Date();
