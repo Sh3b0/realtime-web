@@ -23,8 +23,8 @@ Benchmarking WebSocket, WebRTC, and WebTransport with a simple real-time web app
 
 4. Simulating delay and packet loss
     ```bash
-    tc qdisc add dev lo root netem delay 200ms
-    tc qdisc add dev lo root netem loss 25%
+    sudo tc qdisc add dev lo root netem delay 200ms
+    sudo tc qdisc add dev lo root netem loss 25%
     ```
 
 5. Run client

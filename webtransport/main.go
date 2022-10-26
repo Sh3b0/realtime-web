@@ -16,7 +16,7 @@ func main() {
 		ListenAddr:     ":8001",
 		TLSCert:        webtransport.CertFile{Path: "../certs/localhost.pem"},
 		TLSKey:         webtransport.CertFile{Path: "../certs/localhost-key.pem"},
-		AllowedOrigins: []string{"localhost:3000"},
+		AllowedOrigins: []string{"localhost:3000", "localhost:63342"},
 		QuicConfig: &webtransport.QuicConfig{
 			KeepAlive:      true,
 			MaxIdleTimeout: 30 * time.Second,
@@ -26,8 +26,8 @@ func main() {
 	http.HandleFunc("/", func(rw http.ResponseWriter, r *http.Request) {
 		session := r.Body.(*webtransport.Session)
 		session.AcceptSession()
-
-		fmt.Printf("%s Client connected", time.Now())
+		time.Sleep(1 * time.Millisecond)
+		fmt.Printf("%s Client connected\n", time.Now().Format("2006/02/01 15:04:05"))
 		for i := 10; i < 510; i += 10 {
 			for j := 10; j < 510; j += 10 {
 				err := session.SendMessage([]byte(strconv.Itoa(j) + "," + strconv.Itoa(i) + " "))
