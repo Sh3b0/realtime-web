@@ -8,18 +8,19 @@ webRTCBtn.onclick = (_) => {
 
     let t0 = new Date();
     let messageCount = 0;
+    let iceFinished = false;
+
     const wsClient = new WebSocket("wss://localhost:8002");
     const conn = new RTCPeerConnection({iceServers: [{urls: 'stun:stun.l.google.com:19302'}]});
-    const dataChannel = conn.createDataChannel('dataChannel', {ordered: false, maxRetransmits: 0, });
+    const dataChannel = conn.createDataChannel('dataChannel', {ordered: false, maxRetransmits: 0,});
     const decoder = new TextDecoder("utf-8");
 
-    conn.onicecandidate = e => {
+    conn.onicecandidate = async e => {
+        console.log(`New ice candidate: ${e.candidate}`)
         if (e.candidate === null) {
-            console.info("Sending offer to server");
-            // wsClient.onopen = () => {
-            //     console.info(conn.localDescription.sdp);
-                wsClient.send(btoa(JSON.stringify(conn.localDescription)));
-            // }
+            iceFinished = true;
+            while (wsClient.readyState !== 1) await new Promise(r => setTimeout(r, 10));
+            wsClient.send(btoa(JSON.stringify(conn.localDescription)));
         }
     }
 
