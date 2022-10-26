@@ -12,7 +12,7 @@ webRTCBtn.onclick = (_) => {
 
     const wsClient = new WebSocket("wss://localhost:8002");
     const conn = new RTCPeerConnection({iceServers: [{urls: 'stun:stun.l.google.com:19302'}]});
-    const dataChannel = conn.createDataChannel('dataChannel', {ordered: false, maxRetransmits: 0,});
+    const dataChannel = conn.createDataChannel('dataChannel', {ordered: true, maxRetransmits: 5,});
     const decoder = new TextDecoder("utf-8");
 
     conn.onicecandidate = async e => {

@@ -10,6 +10,8 @@ import (
 	"github.com/adriancable/webtransport-go"
 )
 
+var mode = "reliable"
+
 func main() {
 	server := &webtransport.Server{
 		ListenAddr:     ":8001",
@@ -26,16 +28,35 @@ func main() {
 		session := r.Body.(*webtransport.Session)
 		session.AcceptSession()
 		log.Printf("Client Connected\n")
-		for i := 10; i < 510; i += 10 {
-			for j := 10; j < 510; j += 10 {
-				err := session.SendMessage([]byte(strconv.Itoa(j) + "," + strconv.Itoa(i) + " "))
-				if err != nil {
-					log.Println(err)
-					return
+
+		if mode == "unreliable" {
+			for i := 10; i < 510; i += 10 {
+				for j := 10; j < 510; j += 10 {
+					err := session.SendMessage([]byte(strconv.Itoa(j) + "," + strconv.Itoa(i) + " "))
+					if err != nil {
+						log.Println(err)
+						return
+					}
+					time.Sleep(1 * time.Millisecond)
 				}
-				time.Sleep(1 * time.Millisecond)
+			}
+		} else {
+			stream, err := session.OpenUniStreamSync(session.Context())
+			if err != nil {
+				return
+			}
+			for i := 10; i < 510; i += 10 {
+				for j := 10; j < 510; j += 10 {
+					_, err := stream.Write([]byte(strconv.Itoa(j) + "," + strconv.Itoa(i) + " "))
+					if err != nil {
+						log.Println(err)
+						return
+					}
+					time.Sleep(1 * time.Millisecond)
+				}
 			}
 		}
+
 		if err := session.Close(); err != nil {
 			log.Println(err)
 			return
