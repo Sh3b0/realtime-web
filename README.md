@@ -12,7 +12,7 @@ Experimenting with WebSocket, WebRTC, and WebTransport by streaming 2500 coordin
 
 ![2](./gifs/2.gif)
 
-### 3. 200ms delay + 20% packet loss
+### 200ms delay + 20% packet loss
 
 ![3](./gifs/3.gif)
 
