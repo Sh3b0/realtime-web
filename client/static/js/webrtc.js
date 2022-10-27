@@ -4,7 +4,7 @@ const webRTCBtn = document.getElementById("webrtc");
 
 webRTCBtn.onclick = (_) => {
     initCanvas();
-    // webRTCBtn.disabled = true;
+    webRTCBtn.disabled = true;
 
     let t0 = new Date();
     let messageCount = 0;

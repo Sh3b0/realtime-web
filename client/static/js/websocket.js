@@ -5,7 +5,7 @@ const serverUrl = "wss://localhost:8000";
 
 webSocketBtn.onclick = (_) => {
     initCanvas()
-    // webSocketBtn.disabled = true
+    webSocketBtn.disabled = true
     console.info(`Connecting to WebSocket server at ${serverUrl} ...`);
 
     let t0 = new Date();
