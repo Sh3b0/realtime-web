@@ -25,12 +25,14 @@ webRTCBtn.onclick = (_) => {
 
     dataChannel.onopen = () => {
         console.info(`WebRTC DataChannel established in ${new Date() - t0} ms.`);
-        webRTCBtn.disabled = true;
-        t0 = new Date();
-        chart.data.datasets[2].data.push({x: 0, y: 0});
     };
 
     dataChannel.onmessage = (e) => {
+        if(messageCount === 0) {
+            webRTCBtn.disabled = true;
+            t0 = new Date();
+            chart.data.datasets[2].data.push({x: 0, y: 0});
+        }
         messageCount += 1;
         if (new Date() - t0 - chart.data.datasets[2].data.at(-1).x > 200) {
             chart.data.datasets[2].data.push({x: new Date() - t0, y: messageCount});

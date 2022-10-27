@@ -55,6 +55,7 @@ func main() {
 			}
 		}
 
+		// TODO: server should wait for buffered packets to be sent before closing connection.
 		if err := session.Close(); err != nil {
 			log.Fatal(err)
 		}
