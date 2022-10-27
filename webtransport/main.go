@@ -34,8 +34,7 @@ func main() {
 				for j := 10; j < 510; j += 10 {
 					err := session.SendMessage([]byte(strconv.Itoa(j) + "," + strconv.Itoa(i) + " "))
 					if err != nil {
-						log.Println(err)
-						return
+						log.Fatal(err)
 					}
 					time.Sleep(1 * time.Millisecond)
 				}
@@ -43,14 +42,13 @@ func main() {
 		} else {
 			stream, err := session.OpenUniStreamSync(session.Context())
 			if err != nil {
-				return
+				log.Fatal(err)
 			}
 			for i := 10; i < 510; i += 10 {
 				for j := 10; j < 510; j += 10 {
 					_, err := stream.Write([]byte(strconv.Itoa(j) + "," + strconv.Itoa(i) + " "))
 					if err != nil {
-						log.Println(err)
-						return
+						log.Fatal(err)
 					}
 					time.Sleep(1 * time.Millisecond)
 				}
@@ -58,8 +56,7 @@ func main() {
 		}
 
 		if err := session.Close(); err != nil {
-			log.Println(err)
-			return
+			log.Fatal(err)
 		}
 	})
 

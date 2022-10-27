@@ -17,24 +17,21 @@ func main() {
 
 		conn, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
-			log.Println(err)
+			log.Fatal(err)
 		}
 
 		log.Println("Client Connected")
-
 		for i := 10; i < 510; i += 10 {
 			for j := 10; j < 510; j += 10 {
 				if err := conn.WriteMessage(websocket.TextMessage,
 					[]byte(strconv.Itoa(j)+","+strconv.Itoa(i)+" ")); err != nil {
-					log.Println(err)
-					return
+					log.Fatal(err)
 				}
 				time.Sleep(1 * time.Millisecond)
 			}
 		}
 		if err := conn.Close(); err != nil {
-			log.Println(err)
-			return
+			log.Fatal(err)
 		}
 	})
 	log.Println("Server is listening at :8000")

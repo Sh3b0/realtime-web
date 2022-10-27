@@ -16,7 +16,7 @@ webRTCBtn.onclick = (_) => {
     const decoder = new TextDecoder("utf-8");
 
     conn.onicecandidate = async e => {
-        console.log(`New ice candidate: ${e.candidate}`)
+        // console.log(`New ice candidate: ${e.candidate}`)
         if (e.candidate === null) {
             iceFinished = true;
             while (wsClient.readyState !== 1) await new Promise(r => setTimeout(r, 10));
@@ -25,7 +25,7 @@ webRTCBtn.onclick = (_) => {
     }
 
     dataChannel.onopen = () => {
-        console.info(`WebRTC Connection established in ${new Date() - t0} ms.`);
+        console.info(`WebRTC DataChannel established in ${new Date() - t0} ms.`);
         t0 = new Date();
         chart.data.datasets[2].data.push({x: 0, y: 0});
     };
@@ -40,8 +40,11 @@ webRTCBtn.onclick = (_) => {
     }
 
     dataChannel.onclose = () => {
+        chart.data.datasets[2].data.push({x: new Date() - t0, y: messageCount});
+        chart.update();
         conn.close();
-        console.info('Connection closed');
+        console.info(`${messageCount} message(s) were received within ${new Date() - t0} ms.`)
+        console.info('DataChannel closed');
     };
 
     conn.createOffer().then(o => conn.setLocalDescription(o));

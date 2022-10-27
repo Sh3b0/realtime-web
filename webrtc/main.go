@@ -73,11 +73,11 @@ func main() {
 						time.Sleep(1 * time.Millisecond)
 					}
 				}
-				if channel.BufferedAmount() == 0 {
+				channel.OnBufferedAmountLow(func() {
 					if err := peerConn.Close(); err != nil {
 						log.Fatal(err)
 					}
-				}
+				})
 			})
 		})
 
