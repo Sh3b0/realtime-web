@@ -5,7 +5,6 @@ const serverUrl = "wss://localhost:8000";
 
 webSocketBtn.onclick = (_) => {
     initCanvas()
-    webSocketBtn.disabled = true
     console.info(`Connecting to WebSocket server at ${serverUrl} ...`);
 
     let t0 = new Date();
@@ -14,6 +13,7 @@ webSocketBtn.onclick = (_) => {
 
     client.onopen = (_) => {
         console.info(`Connection established in ${new Date() - t0} ms.`);
+        webSocketBtn.disabled = true
         t0 = new Date();
         chart.data.datasets[0].data.push({x: 0, y: 0});
     }

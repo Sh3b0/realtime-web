@@ -6,7 +6,6 @@ const mode = "reliable";
 
 webTransportBtn.onclick = async (_) => {
     initCanvas()
-    webTransportBtn.disabled = true;
     console.info(`Connecting to WebTransport server at ${serverUrl} ...`);
 
     let t0 = new Date();
@@ -23,6 +22,7 @@ webTransportBtn.onclick = async (_) => {
 
     await client.ready;
     console.info(`Connection established in ${new Date() - t0} ms.`);
+    webTransportBtn.disabled = true;
 
     t0 = new Date();
     chart.data.datasets[1].data.push({x: 0, y: 0});

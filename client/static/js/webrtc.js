@@ -4,7 +4,6 @@ const webRTCBtn = document.getElementById("webrtc");
 
 webRTCBtn.onclick = (_) => {
     initCanvas();
-    webRTCBtn.disabled = true;
 
     let t0 = new Date();
     let messageCount = 0;
@@ -26,6 +25,7 @@ webRTCBtn.onclick = (_) => {
 
     dataChannel.onopen = () => {
         console.info(`WebRTC DataChannel established in ${new Date() - t0} ms.`);
+        webRTCBtn.disabled = true;
         t0 = new Date();
         chart.data.datasets[2].data.push({x: 0, y: 0});
     };
