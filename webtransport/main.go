@@ -10,7 +10,7 @@ import (
 	"github.com/adriancable/webtransport-go"
 )
 
-var mode = "reliable"
+var reliable = true
 
 func main() {
 	server := &webtransport.Server{
@@ -29,17 +29,7 @@ func main() {
 		session.AcceptSession()
 		log.Printf("Client Connected\n")
 
-		if mode == "unreliable" {
-			for i := 10; i < 510; i += 10 {
-				for j := 10; j < 510; j += 10 {
-					err := session.SendMessage([]byte(strconv.Itoa(j) + "," + strconv.Itoa(i) + " "))
-					if err != nil {
-						log.Fatal(err)
-					}
-					time.Sleep(1 * time.Millisecond)
-				}
-			}
-		} else {
+		if reliable {
 			stream, err := session.OpenUniStreamSync(session.Context())
 			if err != nil {
 				log.Fatal(err)
@@ -53,9 +43,18 @@ func main() {
 					time.Sleep(1 * time.Millisecond)
 				}
 			}
+		} else {
+			for i := 10; i < 510; i += 10 {
+				for j := 10; j < 510; j += 10 {
+					err := session.SendMessage([]byte(strconv.Itoa(j) + "," + strconv.Itoa(i) + " "))
+					if err != nil {
+						log.Fatal(err)
+					}
+					time.Sleep(1 * time.Millisecond)
+				}
+			}
 		}
-
-		// TODO: server should wait for buffered packets to be sent before closing connection.
+		<-session.Context().Done()
 		if err := session.Close(); err != nil {
 			log.Fatal(err)
 		}
