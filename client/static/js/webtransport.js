@@ -2,7 +2,7 @@ import {chart, initCanvas, visualizePacket} from "./common.js"
 
 const webTransportBtn = document.getElementById("webtransport");
 const serverUrl = "https://localhost:8001";
-const mode = "reliable";
+const reliable = false;
 
 webTransportBtn.onclick = async (_) => {
     initCanvas()
@@ -28,15 +28,15 @@ webTransportBtn.onclick = async (_) => {
     chart.data.datasets[1].data.push({x: 0, y: 0});
 
     let reader, decoder;
-    if (mode === "unreliable") {
-        reader = client.datagrams.readable.getReader();
-        decoder = new TextDecoder("utf-8");
-    } else {
+    if (reliable) {
         const streamReader = client.incomingUnidirectionalStreams.getReader()
         const {value} = await streamReader.read()
         let stream = value
         decoder = new TextDecoderStream('utf-8');
         reader = stream.pipeThrough(decoder).getReader();
+    } else {
+        reader = client.datagrams.readable.getReader();
+        decoder = new TextDecoder("utf-8");
     }
 
     let flag = false;
@@ -51,7 +51,7 @@ webTransportBtn.onclick = async (_) => {
                 chart.data.datasets[1].data.push({x: new Date() - t0, y: messageCount});
                 chart.update();
             }
-            if (mode === "unreliable") value = decoder.decode(value)
+            if (!reliable) value = decoder.decode(value)
             visualizePacket(value);
         }).catch((reason) => {
             console.info(`Disconnected from WebTransport server: ${reason}`)

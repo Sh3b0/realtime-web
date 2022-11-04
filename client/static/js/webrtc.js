@@ -1,7 +1,7 @@
 import {chart, initCanvas, visualizePacket} from "./common.js";
 
 const webRTCBtn = document.getElementById("webrtc");
-const reliable = true;
+const reliable = false;
 
 webRTCBtn.onclick = (_) => {
     initCanvas();
@@ -12,8 +12,9 @@ webRTCBtn.onclick = (_) => {
 
     const wsClient = new WebSocket("wss://localhost:8002");
     const conn = new RTCPeerConnection({iceServers: [{urls: 'stun:stun.l.google.com:19302'}]});
-    const dataChannel = reliable ? conn.createDataChannel('dataChannel',
-        {ordered: true, maxRetransmits: 5}) : conn.createDataChannel('dataChannel');
+    const dataChannel = reliable ?
+        conn.createDataChannel('dataChannel', {ordered: true, maxRetransmits: 5}) :
+        conn.createDataChannel('dataChannel', {ordered: false, maxRetransmits: 0});
     const decoder = new TextDecoder("utf-8");
 
     conn.onicecandidate = async e => {

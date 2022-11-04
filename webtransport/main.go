@@ -10,7 +10,7 @@ import (
 	"github.com/adriancable/webtransport-go"
 )
 
-var reliable = true
+var reliable = false
 
 func main() {
 	server := &webtransport.Server{
