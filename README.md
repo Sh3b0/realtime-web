@@ -5,27 +5,24 @@ Experimenting with WebSocket, WebRTC, and WebTransport by streaming 2500 coordin
 ## Demos
 
 <details>
-<video controls>
-<source src="./videos/1.mp4" type="video/mp4">
-Your browser does not support the video tag.
-</video>
-<summary><b>0% Packet loss</b><summary>
+<summary>0% Packet loss<summary>
+
+https://user-images.githubusercontent.com/40727318/202955109-fe8566a7-6dd5-4bb6-8a18-0609f8657024.mp4
+
 </details>
 
 <details>
-<video controls>
-<source src="./videos/2.mp4" type="video/mp4">
-Your browser does not support the video tag.
-</video>
 <summary><b>15% Packet loss, Unreliable WebRTC and WebTransport</b><summary>
+
+https://user-images.githubusercontent.com/40727318/202955154-bb627266-36e8-443e-a519-50324740fe9b.mp4
+
 </details>
 
 <details>
-<video controls>
-<source src="./videos/3.mp4" type="video/mp4">
-Your browser does not support the video tag.
-</video>
 <summary><b>15% Packet loss, Reliable WebRTC and WebTransport</b><summary>
+
+https://user-images.githubusercontent.com/40727318/202955186-850cfeaf-472f-4fa0-bf26-d3d633ded65d.mp4
+
 </details>
 
 
