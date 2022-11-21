@@ -90,6 +90,7 @@ func main() {
 			if message != nil {
 				break
 			}
+			time.Sleep(10 * time.Millisecond)
 		}
 		offer := webrtc.SessionDescription{}
 		decode(string(message[:]), &offer)
