@@ -7,21 +7,21 @@ Experimenting with WebSocket, WebRTC, and WebTransport by streaming 2500 coordin
 <details>
 <summary>0% Packet loss</summary>
 
-https://user-images.githubusercontent.com/40727318/202955109-fe8566a7-6dd5-4bb6-8a18-0609f8657024.mp4
+https://user-images.githubusercontent.com/40727318/202964541-5ec3f104-61e8-41ea-8523-d03e7e3badf8.mp4
 
 </details>
 
 <details>
 <summary>15% Packet loss (unreliable WebRTC/WebTransport)</summary>
 
-https://user-images.githubusercontent.com/40727318/202955154-bb627266-36e8-443e-a519-50324740fe9b.mp4
+https://user-images.githubusercontent.com/40727318/202964547-58622a36-5c1a-4297-bbbe-868ee2edaccd.mp4
 
 </details>
 
 <details>
 <summary>15% Packet loss (reliable WebRTC/WebTransport)</summary>
 
-https://user-images.githubusercontent.com/40727318/202955186-850cfeaf-472f-4fa0-bf26-d3d633ded65d.mp4
+https://user-images.githubusercontent.com/40727318/202964557-49bcd33a-a0fb-4dd2-8bed-d7dbfa8a2095.mp4
 
 </details>
 
