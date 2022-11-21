@@ -4,25 +4,38 @@ Experimenting with WebSocket, WebRTC, and WebTransport by streaming 2500 coordin
 
 ## Demos
 
-### 0% Packet loss
+<details>
+<video controls>
+<source src="./videos/1.mp4" type="video/mp4">
+Your browser does not support the video tag.
+</video>
+<summary><b>0% Packet loss</b><summary>
+</details>
 
-![1](./gifs/1.gif)
+<details>
+<video controls>
+<source src="./videos/2.mp4" type="video/mp4">
+Your browser does not support the video tag.
+</video>
+<summary><b>15% Packet loss, Unreliable WebRTC and WebTransport</b><summary>
+</details>
 
-### 15% Packet loss, Unreliable WebRTC and WebTransport
+<details>
+<video controls>
+<source src="./videos/3.mp4" type="video/mp4">
+Your browser does not support the video tag.
+</video>
+<summary><b>15% Packet loss, Reliable WebRTC and WebTransport</b><summary>
+</details>
 
-![2](./gifs/2.gif)
-
-### 15% Packet loss, Reliable WebRTC and WebTransport
-
-![3](./gifs/3.gif)
 
 ## Experiment details
 
 All servers are written in Go and hosted locally. All connections use HTTPS with self-signed certificates, connection establishment period is excluded from the time graph.
 
-**In the first experiment**, WebRTC data channel and WebTransport server are operating in unreliable modes, undelivered packets will not be retransmitted. However, since the network is reliable, we can see almost no performance differences between the protocols.
+**In the first experiment**, WebRTC data channel and WebTransport server are operating in unreliable modes, undelivered packets are not retransmitted. However, since the network is reliable, we can see almost no performance differences between the protocols.
 
-**In the second experiment**, WebRTC data channel and WebTransport server are still operating in unreliable modes and a packet may be dropped with a probability of 15%. We can see WebSocket performance suffering due to TCP head-of-line blocking. WebRTC connection establishment took longer than usual since it relies on WebSocket for signaling. Yet WebTransport maintained a stable and efficient behavior.
+**In the second experiment**, WebRTC data channel and WebTransport server are still operating in unreliable modes, but any packet may be dropped with a probability of 15%. We can see WebSocket performance starting to suffer due to TCP head-of-line blocking. WebRTC and WebTransport maintained a stable and efficient behavior since dropped packets are not retransmitted.
 
 **The third experiment is the same as the second one** except now, WebRTC data channel is set up for ordered delivery and a `maxRetransmission` value of `5` to ensure reliability. WebTransport server used a server-initiated, reliable, and unidirectional stream which is better suited for this experiment (since data flows only in one direction). We can see WebRTC packets often arrive in bulk since ordered delivery enforces a large buffer (newer packets were buffered waiting for older ones to be retransmitted). This results in an overall behavior not better than WebSocket. In the end, WebTransport was the fastest protocol to deliver all the coordinates with the smallest number of packets transmitted.
 
@@ -54,9 +67,9 @@ All servers are written in Go and hosted locally. All connections use HTTPS with
     ./run.sh websocket
     ```
 
-4. Simulating delay and packet loss (use `del` instead of `add` to remove rules)
+4. Simulating packet loss (use `del` instead of `add` to remove rules)
     ```bash
-    sudo tc qdisc add dev lo root netem delay 200ms loss 20%
+    sudo tc qdisc add dev lo root netem loss 15%
     ```
     
 5. Run client
