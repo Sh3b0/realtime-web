@@ -19,12 +19,11 @@ webSocketBtn.onclick = (_) => {
     }
 
     client.onmessage = (e) => {
-        messageCount += 1;
+        messageCount += visualizePacket(e.data);
         if (new Date() - t0 - chart.data.datasets[0].data.at(-1).x > 200) {
             chart.data.datasets[0].data.push({x: new Date() - t0, y: messageCount});
             chart.update();
         }
-        visualizePacket(e.data);
     }
 
     client.onclose = (_) => {

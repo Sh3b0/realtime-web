@@ -45,18 +45,19 @@ webTransportBtn.onclick = async (_) => {
             if (done) {
                 console.info("Finished reading data");
                 flag = true;
+                return
             }
-            messageCount += 1;
+            if (!reliable) value = decoder.decode(value)
+            messageCount += visualizePacket(value);
             if (new Date() - t0 - chart.data.datasets[1].data.at(-1).x > 200) {
                 chart.data.datasets[1].data.push({x: new Date() - t0, y: messageCount});
                 chart.update();
             }
-            if (!reliable) value = decoder.decode(value)
-            visualizePacket(value);
-        }).catch((reason) => {
-            console.info(`Disconnected from WebTransport server: ${reason}`)
+        }).catch((error) => {
+            console.info(error)
             flag = true;
         });
         if (flag) break;
     }
+    console.info(`Disconnected from WebTransport server.`)
 }

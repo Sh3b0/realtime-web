@@ -9,12 +9,12 @@ webRTCBtn.onclick = (_) => {
     let t0 = new Date();
     let messageCount = 0;
     let iceFinished = false;
-
+    console.info("Connecting to signaling server at wss://localhost:8002")
     const wsClient = new WebSocket("wss://localhost:8002");
     const conn = new RTCPeerConnection({iceServers: [{urls: 'stun:stun.l.google.com:19302'}]});
     const dataChannel = reliable ?
         conn.createDataChannel('dataChannel', {ordered: true, maxRetransmits: 5}) :
-        conn.createDataChannel('dataChannel', {ordered: false, maxRetransmits: 0});
+        conn.createDataChannel('dataChannel', {ordered: true, maxRetransmits: 0});
     const decoder = new TextDecoder("utf-8");
 
     conn.onicecandidate = async e => {
@@ -36,20 +36,18 @@ webRTCBtn.onclick = (_) => {
             t0 = new Date();
             chart.data.datasets[2].data.push({x: 0, y: 0});
         }
-        messageCount += 1;
+        messageCount += visualizePacket(decoder.decode(e.data));
         if (new Date() - t0 - chart.data.datasets[2].data.at(-1).x > 200) {
             chart.data.datasets[2].data.push({x: new Date() - t0, y: messageCount});
             chart.update();
         }
-        visualizePacket(decoder.decode(e.data));
     }
 
     dataChannel.onclose = () => {
         chart.data.datasets[2].data.push({x: new Date() - t0, y: messageCount});
         chart.update();
-        conn.close();
         console.info(`${messageCount} message(s) were received within ${new Date() - t0} ms.`)
-        console.info('DataChannel closed');
+        console.info('Disconnected from WebRTC server.');
     };
 
     conn.createOffer().then(o => conn.setLocalDescription(o));

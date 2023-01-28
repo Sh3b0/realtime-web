@@ -27,6 +27,7 @@ func main() {
 	http.HandleFunc("/", func(rw http.ResponseWriter, r *http.Request) {
 		session := r.Body.(*webtransport.Session)
 		session.AcceptSession()
+		time.Sleep(1 * time.Millisecond)
 		log.Printf("Client Connected\n")
 
 		if reliable {
@@ -43,6 +44,9 @@ func main() {
 					time.Sleep(1 * time.Millisecond)
 				}
 			}
+			if err := stream.Close(); err != nil {
+				log.Fatal(err)
+			}
 		} else {
 			for i := 10; i < 510; i += 10 {
 				for j := 10; j < 510; j += 10 {
@@ -54,7 +58,7 @@ func main() {
 				}
 			}
 		}
-		<-session.Context().Done()
+		//<-session.Context().Done()
 		if err := session.Close(); err != nil {
 			log.Fatal(err)
 		}

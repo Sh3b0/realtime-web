@@ -73,11 +73,15 @@ func main() {
 						time.Sleep(1 * time.Millisecond)
 					}
 				}
-				channel.OnBufferedAmountLow(func() {
-					if err := peerConn.Close(); err != nil {
-						log.Fatal(err)
+				for {
+					if channel.BufferedAmount() == 0 {
+						if err := peerConn.Close(); err != nil {
+							log.Fatal(err)
+						}
+						break
 					}
-				})
+					time.Sleep(1 * time.Millisecond)
+				}
 			})
 		})
 
@@ -111,9 +115,13 @@ func main() {
 		gatherComplete := webrtc.GatheringCompletePromise(peerConn)
 		<-gatherComplete
 
-		//log.Printf("Server answer: %s\n", *pc.LocalDescription())
+		//log.Printf("Server answer: %s\n", *peerConn.LocalDescription())
 
 		if err := wsConn.WriteMessage(websocket.TextMessage, []byte(encode(*peerConn.LocalDescription()))); err != nil {
+			log.Fatal(err)
+		}
+
+		if err := wsConn.Close(); err != nil {
 			log.Fatal(err)
 		}
 	})

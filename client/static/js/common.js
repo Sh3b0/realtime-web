@@ -17,16 +17,23 @@ export let chart = new Chart(chartContext, {
                 label: "WebTransport",
                 borderColor: "#de5246",
                 showLine: true,
+                borderDash: [10, 5],
             },
             {
                 data: [],
                 label: "WebRTC",
                 borderColor: "#34A853",
                 showLine: true,
+                borderDash: [2, 5],
             },
         ]
     },
     options: {
+        elements: {
+            point:{
+                radius: 0
+            }
+        },
         scales: {
             x: {
                 title: {
@@ -37,7 +44,7 @@ export let chart = new Chart(chartContext, {
             y: {
                 title: {
                     display: true,
-                    text: 'Packets arrived'
+                    text: 'Messages arrived'
                 }
             }
         }
@@ -60,8 +67,9 @@ export function initCanvas() {
 
 export function visualizePacket(packet) {
     let messages = packet.split(' ');
+    messages.pop();
+    // console.info(messages);
     messages.forEach(message => {
-        if (message === '') return;
         let coords = message.split(',');
         panelContext.fillStyle = 'black';
         panelContext.fillRect(
@@ -71,4 +79,5 @@ export function visualizePacket(packet) {
             9
         )
     });
+    return messages.length;
 }
