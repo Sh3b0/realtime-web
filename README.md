@@ -1,27 +1,27 @@
 # realtime-web
-
 Experimenting with WebSocket, WebRTC, and WebTransport by streaming 2500 coordinates from server to client to visualize.
+> Checkout the discussion on [HackerNews](https://news.ycombinator.com/item?id=34137974)
 
 ## Demos
 
 <details>
 <summary>0% Packet loss</summary>
 
-https://user-images.githubusercontent.com/40727318/202964541-5ec3f104-61e8-41ea-8523-d03e7e3badf8.mp4
+https://user-images.githubusercontent.com/40727318/215340433-ac2543e7-e2eb-4c4f-b3c1-d5adc4abffd3.mp4
 
 </details>
 
 <details>
 <summary>15% Packet loss (unreliable WebRTC/WebTransport)</summary>
 
-https://user-images.githubusercontent.com/40727318/202964547-58622a36-5c1a-4297-bbbe-868ee2edaccd.mp4
+https://user-images.githubusercontent.com/40727318/215340455-66b51c24-9015-4086-9453-4230cf72cea6.mp4
 
 </details>
 
 <details>
 <summary>15% Packet loss (reliable WebRTC/WebTransport)</summary>
 
-https://user-images.githubusercontent.com/40727318/202964557-49bcd33a-a0fb-4dd2-8bed-d7dbfa8a2095.mp4
+https://user-images.githubusercontent.com/40727318/215340465-ebe2c5cf-839c-4822-9df6-eb177fe2bb77.mp4
 
 </details>
 
@@ -31,9 +31,9 @@ All servers are written in Go and hosted locally. All connections use HTTPS with
 
 **In the first experiment**, WebRTC data channel and WebTransport server are operating in unreliable modes, undelivered packets are not retransmitted. However, since the network is reliable, we can see almost no performance differences between the protocols.
 
-**In the second experiment**, WebRTC data channel and WebTransport server are still operating in unreliable modes, but any packet may be dropped with a probability of 15%. We can see WebSocket performance starting to suffer due to TCP head-of-line blocking. WebRTC and WebTransport maintained a stable and efficient behavior since dropped packets are not retransmitted.
+**In the second experiment**, WebRTC data channel and WebTransport server are still operating in unreliable modes, but any packet may be dropped with a probability of 15%. We can see WebSocket performance starting to suffer due to TCP head-of-line blocking. Results varied over multiple runs, with WebTransport constantly managing to deliver more messages than WebRTC, probably due to the use of a larger buffer size.
 
-**The third experiment is the same as the second one** except now, WebRTC data channel is set up for ordered delivery and a `maxRetransmission` value of `5` to ensure reliability. WebTransport server used a server-initiated, reliable, and unidirectional stream which is better suited for this experiment (since data flows only in one direction). We can see WebRTC packets often arrive in bulk since ordered delivery enforces a large buffer (newer packets were buffered waiting for older ones to be retransmitted). This results in an overall behavior not better than WebSocket. In the end, WebTransport was the fastest protocol to deliver all the coordinates with the smallest number of packets transmitted.
+**In the third experiment**, all protocols are operating in reliable modes. WebRTC uses a `maxRetransmission` value of `5` and WebTransport server uses a server-initiated unidirectional stream. Interestingly, WebTransport maintained a very stable and efficient behavior while WebRTC suffered what looks like a sender-side head-of-line blocking.
 
 **Additional notes:**
 
