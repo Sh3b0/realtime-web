@@ -3,9 +3,9 @@ package main
 import (
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -67,7 +67,8 @@ func main() {
 				log.Println("Channel Open")
 				for i := 10; i < 510; i += 10 {
 					for j := 10; j < 510; j += 10 {
-						if err := channel.Send([]byte(strconv.Itoa(j) + "," + strconv.Itoa(i) + " ")); err != nil {
+						message := fmt.Sprintf("%03d,%03d", j, i)
+						if err := channel.Send([]byte(message)); err != nil {
 							log.Fatal(err)
 						}
 						time.Sleep(1 * time.Millisecond)

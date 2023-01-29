@@ -36,7 +36,8 @@ webRTCBtn.onclick = (_) => {
             t0 = new Date();
             chart.data.datasets[2].data.push({x: 0, y: 0});
         }
-        messageCount += visualizePacket(decoder.decode(e.data));
+        messageCount += 1;
+        visualizePacket(decoder.decode(e.data));
         if (new Date() - t0 - chart.data.datasets[2].data.at(-1).x > 200) {
             chart.data.datasets[2].data.push({x: new Date() - t0, y: messageCount});
             chart.update();

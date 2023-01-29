@@ -48,7 +48,8 @@ webTransportBtn.onclick = async (_) => {
                 return
             }
             if (!reliable) value = decoder.decode(value)
-            messageCount += visualizePacket(value);
+            messageCount += 1;
+            visualizePacket(value);
             if (new Date() - t0 - chart.data.datasets[1].data.at(-1).x > 200) {
                 chart.data.datasets[1].data.push({x: new Date() - t0, y: messageCount});
                 chart.update();

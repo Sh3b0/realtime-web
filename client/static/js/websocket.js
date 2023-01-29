@@ -19,7 +19,8 @@ webSocketBtn.onclick = (_) => {
     }
 
     client.onmessage = (e) => {
-        messageCount += visualizePacket(e.data);
+        messageCount += 1;
+        visualizePacket(e.data);
         if (new Date() - t0 - chart.data.datasets[0].data.at(-1).x > 200) {
             chart.data.datasets[0].data.push({x: new Date() - t0, y: messageCount});
             chart.update();

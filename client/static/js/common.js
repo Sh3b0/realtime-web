@@ -66,18 +66,13 @@ export function initCanvas() {
 }
 
 export function visualizePacket(packet) {
-    let messages = packet.split(' ');
-    messages.pop();
-    // console.info(messages);
-    messages.forEach(message => {
-        let coords = message.split(',');
-        panelContext.fillStyle = 'black';
-        panelContext.fillRect(
-            coords[0],
-            coords[1],
-            9,
-            9
-        )
-    });
-    return messages.length;
+    // console.info(packet);
+    let coords = packet.split(',');
+    panelContext.fillStyle = 'black';
+    panelContext.fillRect(
+        coords[0],
+        coords[1],
+        9,
+        9
+    )
 }

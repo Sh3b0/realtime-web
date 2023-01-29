@@ -2,9 +2,9 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/adriancable/webtransport-go"
@@ -37,7 +37,8 @@ func main() {
 			}
 			for i := 10; i < 510; i += 10 {
 				for j := 10; j < 510; j += 10 {
-					_, err := stream.Write([]byte(strconv.Itoa(j) + "," + strconv.Itoa(i) + " "))
+					message := fmt.Sprintf("%03d,%03d", j, i)
+					_, err := stream.Write([]byte(message))
 					if err != nil {
 						log.Fatal(err)
 					}
@@ -50,7 +51,8 @@ func main() {
 		} else {
 			for i := 10; i < 510; i += 10 {
 				for j := 10; j < 510; j += 10 {
-					err := session.SendMessage([]byte(strconv.Itoa(j) + "," + strconv.Itoa(i) + " "))
+					message := fmt.Sprintf("%03d,%03d", j, i)
+					err := session.SendMessage([]byte(message))
 					if err != nil {
 						log.Fatal(err)
 					}
