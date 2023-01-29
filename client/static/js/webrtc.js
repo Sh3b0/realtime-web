@@ -43,11 +43,13 @@ webRTCBtn.onclick = (_) => {
             chart.data.datasets[2].data.push({x: new Date() - t0, y: messageCount});
             chart.update();
         }
+        if(messageCount === 2500) {
+            chart.data.datasets[2].data.push({x: new Date() - t0, y: messageCount});
+            chart.update();
+        }
     }
 
     dataChannel.onclose = () => {
-        chart.data.datasets[2].data.push({x: new Date() - t0, y: messageCount});
-        chart.update();
         console.info(`${messageCount} message(s) were received within ${new Date() - t0} ms.`)
         console.info('Disconnected from WebRTC server.');
     };
