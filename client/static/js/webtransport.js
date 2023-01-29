@@ -48,12 +48,15 @@ webTransportBtn.onclick = async (_) => {
                 return
             }
             if (!reliable) value = decoder.decode(value)
-            messageCount += 1;
-            visualizePacket(value);
-            if (new Date() - t0 - chart.data.datasets[1].data.at(-1).x > 200) {
-                chart.data.datasets[1].data.push({x: new Date() - t0, y: messageCount});
-                chart.update();
-            }
+            let values = value.match(/.{1,7}/g);
+            values.forEach(message => {
+                messageCount += 1;
+                visualizePacket(message);
+                if (new Date() - t0 - chart.data.datasets[1].data.at(-1).x > 200) {
+                    chart.data.datasets[1].data.push({x: new Date() - t0, y: messageCount});
+                    chart.update();
+                }
+            })
         }).catch((error) => {
             console.info(error)
             flag = true;
