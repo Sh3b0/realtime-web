@@ -2,6 +2,7 @@ import {chart, initCanvas, visualizePacket} from "./common.js";
 
 const webRTCBtn = document.getElementById("webrtc");
 const reliable = false;
+const local = true; // For local experimentation, it's not necessary to wait for ICE gathering to complete.
 
 webRTCBtn.onclick = (_) => {
     initCanvas();
@@ -19,7 +20,7 @@ webRTCBtn.onclick = (_) => {
 
     conn.onicecandidate = async e => {
         // console.log(`New ice candidate: ${e.candidate}`)
-        if (e.candidate === null) {
+        if (local || e.candidate === null) {
             iceFinished = true;
             while (wsClient.readyState !== 1) await new Promise(r => setTimeout(r, 10));
             wsClient.send(btoa(JSON.stringify(conn.localDescription)));
