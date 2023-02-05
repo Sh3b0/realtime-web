@@ -31,7 +31,7 @@ All servers are written in Go and hosted locally. All connections use HTTPS with
 
 **In the first experiment**, WebRTC data channel and WebTransport server are operating in unreliable modes, undelivered packets are not retransmitted. However, since the network is reliable, we can see almost no performance differences between the protocols.
 
-**In the second experiment**, WebRTC data channel and WebTransport server are still operating in unreliable modes, but any packet may be dropped with a probability of 15%. We can see WebSocket performance starting to suffer due to TCP head-of-line blocking. Results varied over multiple runs, with WebTransport constantly managing to deliver more messages than WebRTC, probably due to the use of a larger buffer size.
+**In the second experiment**, WebRTC data channel and WebTransport server are still operating in unreliable modes, but any packet may be dropped with a probability of 15%. We can see WebSocket performance starting to suffer due to TCP head-of-line blocking. Results varied over multiple runs, with WebTransport constantly managing to deliver more messages than WebRTC.
 
 **In the third experiment**, all protocols are operating in reliable modes. WebRTC uses a `maxRetransmission` value of `5` and WebTransport server uses a server-initiated unidirectional stream. Interestingly, WebTransport maintained a very stable and efficient behavior while WebRTC suffered what looks like a sender-side head-of-line blocking.
 
